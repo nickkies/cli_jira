@@ -1,0 +1,33 @@
+{
+  "last_item_id": 5,
+  "epics": {
+    "1": {
+      "name": "Epic - CLI Jira clone",
+      "description": "Building CLI apps in Rust",
+      "status": "InProgress",
+      "stories": [2, 3, 4, 5]
+    }
+  },
+  "stories": {
+    "2": {
+      "name": "Story - Reading & writing to disk",
+      "description": "Using json file",
+      "status": "Closed"
+    },
+    "3": {
+      "name": "Story - Using third-party crates",
+      "description": "serde, anyhow, itertools, etc",
+      "status": "InProgress"
+    },
+    "4": {
+      "name": "Story - Writing testable code",
+      "description": "Testing shows the presence of defects, not their absence",
+      "status": "InProgress"
+    },
+    "5": {
+      "name": "Story - Organizing code using modules",
+      "description": "Modules and project structure",
+      "status": "InProgress"
+    }
+  }
+}
