@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(PartialEq, Eq, Debug)]
 pub enum Status {
     Open,
     Inprogress,
@@ -7,6 +8,7 @@ pub enum Status {
     Closed,
 }
 
+#[derive(PartialEq, Eq, Debug)]
 pub struct Epic {
     pub name: String,
     pub description: String,
@@ -25,6 +27,7 @@ impl Epic {
     }
 }
 
+#[derive(PartialEq, Eq, Debug)]
 pub struct Story {
     pub name: String,
     pub description: String,
@@ -41,6 +44,7 @@ impl Story {
     }
 }
 
+#[derive(PartialEq, Eq, Debug)]
 pub struct DBState {
     pub last_item_id: u32,
     pub epics: HashMap<u32, Epic>,
