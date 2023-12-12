@@ -133,7 +133,7 @@ mod tests {
         }
 
         #[test]
-        fn create_stroy_should_error_if_invalid_epic_id() {
+        fn create_story_should_error_if_invalid_epic_id() {
             let db = JiraDatabase {
                 database: Box::new(MockDB::new()),
             };
@@ -179,7 +179,7 @@ mod tests {
             };
 
             let story = Story {
-                name: "stroy 1 name".to_string(),
+                name: "story 1 name".to_string(),
                 description: "story 1 description".to_string(),
                 status: Status::Open,
             };
