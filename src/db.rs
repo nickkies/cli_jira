@@ -109,10 +109,6 @@ mod tests {
 
         use super::*;
 
-        // TODO const or let?
-        const INVALID_JSON: &str = r#"{ "last_item_id": 0 epics: {} stories {} }"#;
-        const VALID_JSON: &str = r#"{ "last_item_id": 0, "epics": {}, "stories": {} }"#;
-
         #[test]
         fn create_epic_should_work() {
             let db = JiraDatabase {
@@ -186,20 +182,23 @@ mod tests {
 
         #[test]
         fn read_db_should_fail_with_invalid_json() {
-            let result = read_json(INVALID_JSON);
+            let file_content = r#"{ "last_item_id": 0 epics: {} stories {} }"#;
+            let result = read_json(file_content);
             assert_eq!(result.is_err(), true);
         }
 
         #[test]
         fn read_db_should_parse_json_file() {
-            let result = read_json(VALID_JSON);
+            let file_content = r#"{ "last_item_id": 0, "epics": {}, "stories": {} }"#;
+            let result = read_json(file_content);
             assert_eq!(result.is_ok(), true);
         }
 
         #[test]
         fn write_db_should_work() {
             let mut tmpfile = tempfile::NamedTempFile::new().unwrap();
-            write!(tmpfile, "{VALID_JSON}").unwrap();
+            let file_content = r#"{ "last_item_id": 0, "epics": {}, "stories": {} }"#;
+            write!(tmpfile, "{file_content}").unwrap();
 
             let db = JSONFileDatabase {
                 file_path: tmpfile
