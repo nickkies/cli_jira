@@ -1,8 +1,6 @@
-use std::collections::HashMap;
-
-use anyhow::Result;
-
 use crate::models::{DBState, Epic, Status, Story};
+use anyhow::Result;
+use std::fs;
 
 trait Database {
     fn read_db(&self) -> Result<DBState>;
@@ -15,16 +13,14 @@ struct JSONFileDatabase {
 
 impl Database for JSONFileDatabase {
     fn read_db(&self) -> Result<DBState> {
-        todo!();
-        Ok(DBState {
-            last_item_id: 0,
-            epics: HashMap::new(),
-            stories: HashMap::new(),
-        })
+        let db_content = fs::read_to_string(&self.file_path)?;
+        let parsed: DBState = serde_json::from_str(&db_content)?;
+        Ok(parsed)
     }
 
     fn write_db(&self, db_state: &DBState) -> Result<()> {
-        todo!();
+        fs::write(&self.file_path, &serde_json::to_vec(db_state)?)?;
+        Ok(())
     }
 }
 
@@ -33,8 +29,7 @@ mod tests {
     use super::*;
 
     mod database {
-        use std::collections::HashMap;
-        use std::io::Write;
+        use std::{collections::HashMap, io::Write};
 
         use super::*;
 
