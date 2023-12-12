@@ -71,6 +71,8 @@ pub mod test_utils {
         last_written_state: RefCell<DBState>,
     }
 
+    // bc test util
+    #[allow(dead_code)]
     impl MockDB {
         pub fn new() -> Self {
             Self {
@@ -143,6 +145,35 @@ mod tests {
 
             let result = db.create_story(story, non_existent_epic_id);
             assert_eq!(result.is_err(), true);
+        }
+
+        #[test]
+        fn create_story_should_work() {
+            let db = JiraDatabase {
+                database: Box::new(MockDB::new()),
+            };
+            let epic = Epic::new("".to_string(), "".to_string());
+            let story = Story::new("".to_string(), "".to_string());
+
+            let result = db.create_epic(epic);
+            assert_eq!(result.is_ok(), true);
+
+            let epic_id = result.unwrap();
+
+            let result = db.create_story(story.clone(), epic_id);
+
+            let id = result.unwrap();
+            let db_state = db.read_db().unwrap();
+
+            let expected_id = 2;
+
+            assert_eq!(id, expected_id);
+            assert_eq!(db_state.last_item_id, expected_id);
+            assert_eq!(
+                db_state.epics.get(&epic_id).unwrap().stories.contains(&id),
+                true
+            );
+            assert_eq!(db_state.stories.get(&id), Some(&story));
         }
 
         #[test]
