@@ -112,6 +112,27 @@ mod tests {
         const VALID_JSON: &str = r#"{ "last_item_id": 0, "epics": {}, "stories": {} }"#;
 
         #[test]
+        fn create_epic_should_work() {
+            let db = JiraDatabase {
+                database: Box::new(MockDB::new()),
+            };
+            let epic = Epic::new("".to_string(), "".to_string());
+
+            let result = db.create_epic(epic.clone());
+
+            assert_eq!(result.is_ok(), true);
+
+            let id = result.unwrap();
+            let db_state = db.read_db().unwrap();
+
+            let expected_id = 1;
+
+            assert_eq!(id, expected_id);
+            assert_eq!(db_state.last_item_id, expected_id);
+            assert_eq!(db_state.epics.get(&id), Some(&epic));
+        }
+
+        #[test]
         fn read_db_should_fail_with_invalid_path() {
             let db = JSONFileDatabase {
                 file_path: "INVALID_PATH".to_string(),
