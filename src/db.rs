@@ -197,6 +197,63 @@ mod tests {
         }
 
         #[test]
+        fn delete_epic_should_error_if_invalid_epic_id() {
+            let db = JiraDatabase {
+                database: Box::new(MockDB::new()),
+            };
+
+            let non_existent_epic_id = 9999;
+
+            let result = db.delete_epic(non_existent_epic_id);
+            assert_eq!(result.is_err(), true);
+        }
+
+        #[test]
+        fn delete_story_should_error_if_invalid_epic_id() {
+            let db = JiraDatabase {
+                database: Box::new(MockDB::new()),
+            };
+            let epic = Epic::new("".to_string(), "".to_string());
+            let story = Story::new("".to_string(), "".to_string());
+
+            let result = db.create_epic(epic);
+            assert_eq!(result.is_ok(), true);
+
+            let epic_id = result.unwrap();
+
+            let result = db.create_story(story, epic_id);
+            assert_eq!(result.is_ok(), true);
+
+            let story_id = result.unwrap();
+            let non_existent_epic_id = 9999;
+
+            let result = db.delete_story(non_existent_epic_id, story_id);
+            assert_eq!(result.is_err(), true);
+        }
+
+        #[test]
+        fn delete_story_should_error_if_story_not_found_in_epic() {
+            let db = JiraDatabase {
+                database: Box::new(MockDB::new()),
+            };
+            let epic = Epic::new("".to_string(), "".to_string());
+            let story = Story::new("".to_string(), "".to_string());
+
+            let result = db.create_epic(epic);
+            assert_eq!(result.is_ok(), true);
+
+            let epic_id = result.unwrap();
+
+            let result = db.create_story(story, epic_id);
+            assert_eq!(result.is_ok(), true);
+
+            let non_existent_epic_id = 9999;
+
+            let result = db.delete_story(epic_id, non_existent_epic_id);
+            assert_eq!(result.is_err(), true);
+        }
+
+        #[test]
         fn read_db_should_fail_with_invalid_path() {
             let db = JSONFileDatabase {
                 file_path: "INVALID_PATH".to_string(),
