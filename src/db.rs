@@ -364,7 +364,7 @@ mod tests {
         }
 
         #[test]
-        fn update_story_status_should_error_if_invalid_stroy_id() {
+        fn update_story_status_should_error_if_invalid_story_id() {
             let db = JiraDatabase {
                 database: Box::new(MockDB::new()),
             };
