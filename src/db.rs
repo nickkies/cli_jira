@@ -364,6 +364,25 @@ mod tests {
         }
 
         #[test]
+        fn update_epic_status_should_work() {
+            let db = JiraDatabase {
+                database: Box::new(MockDB::new()),
+            };
+            let epic = Epic::new("".to_string(), "".to_string());
+
+            let result = db.create_epic(epic);
+            assert_eq!(result.is_ok(), true);
+
+            let epic_id = result.unwrap();
+
+            let result = db.update_epic_status(epic_id, Status::Closed);
+            assert_eq!(result.is_ok(), true);
+
+            let db_state = db.read_db().unwrap();
+            assert_eq!(db_state.epics.get(&epic_id).unwrap().status, Status::Closed);
+        }
+
+        #[test]
         fn update_story_status_should_error_if_invalid_story_id() {
             let db = JiraDatabase {
                 database: Box::new(MockDB::new()),
@@ -373,6 +392,34 @@ mod tests {
 
             let result = db.update_story_status(non_existent_story_id, Status::Closed);
             assert_eq!(result.is_err(), true);
+        }
+
+        #[test]
+        fn update_story_status_should_work() {
+            let db = JiraDatabase {
+                database: Box::new(MockDB::new()),
+            };
+            let epic = Epic::new("".to_string(), "".to_string());
+            let story = Story::new("".to_string(), "".to_string());
+
+            let result = db.create_epic(epic);
+            assert_eq!(result.is_ok(), true);
+
+            let epic_id = result.unwrap();
+
+            let result = db.create_story(story, epic_id);
+            assert_eq!(result.is_ok(), true);
+
+            let story_id = result.unwrap();
+
+            let result = db.update_story_status(story_id, Status::Closed);
+            assert_eq!(result.is_ok(), true);
+
+            let db_state = db.read_db().unwrap();
+            assert_eq!(
+                db_state.stories.get(&story_id).unwrap().status,
+                Status::Closed,
+            );
         }
 
         #[test]
