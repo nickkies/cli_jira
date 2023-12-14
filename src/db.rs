@@ -80,17 +80,37 @@ impl JiraDatabase {
         epic.stories.remove(story_index);
         parsed.stories.remove(&story_id);
 
-        self.database.write_db(&parsed)?;
+        let _ = self.database.write_db(&parsed)?;
 
         Ok(())
     }
 
     pub fn update_epic_status(&self, epic_id: u32, status: Status) -> Result<()> {
-        todo!()
+        let mut parsed = self.database.read_db()?;
+
+        parsed
+            .epics
+            .get_mut(&epic_id)
+            .ok_or_else(|| anyhow!("could not find epic in database!"))?
+            .status = status;
+
+        let _ = self.database.write_db(&parsed)?;
+
+        Ok(())
     }
 
     pub fn update_story_status(&self, story_id: u32, status: Status) -> Result<()> {
-        todo!()
+        let mut parsed = self.database.read_db()?;
+
+        parsed
+            .stories
+            .get_mut(&story_id)
+            .ok_or_else(|| anyhow!("could not find epic in database!"))?
+            .status = status;
+
+        let _ = self.database.write_db(&parsed);
+
+        Ok(())
     }
 }
 
