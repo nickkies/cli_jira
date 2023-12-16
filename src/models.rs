@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum Action {
     NavigateToEpicDetail { epic_id: u32 },
     NavigateToStoryDetail { epic_id: u32, story_id: u32 },
