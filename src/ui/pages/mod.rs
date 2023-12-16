@@ -1,8 +1,9 @@
 use std::{any::Any, rc::Rc};
 
 use anyhow::Result;
+use itertools::Itertools;
 
-use crate::{db::JiraDatabase, models::Action};
+use crate::{db::JiraDatabase, models::Action, ui::pages::page_helpers::get_column_string};
 
 mod page_helpers;
 
@@ -18,15 +19,46 @@ pub struct HomePage {
 
 impl Page for HomePage {
     fn draw_page(&self) -> Result<()> {
-        todo!()
+        println!("----------------------------- EPICS ------------------------------");
+        println!("     id     |               name               |      status      ");
+
+        let epics = self.db.read_db()?.epics;
+
+        epics.keys().sorted().into_iter().for_each(|epic_id| {
+            let epic = &epics[epic_id];
+            let id_col = get_column_string(&epic_id.to_string(), 11);
+            let name_col = get_column_string(&epic.name, 32);
+            let status_col = get_column_string(&epic.status.to_string(), 17);
+            println!("{} | {} | {}", id_col, name_col, status_col);
+        });
+
+        println!();
+        println!();
+
+        println!("[q] quit | [c] create epic | [:id:] navigate to epic");
+
+        Ok(())
     }
 
     fn handle_input(&self, input: &str) -> Result<Option<Action>> {
-        todo!()
+        let epics = self.db.read_db()?.epics;
+
+        match input {
+            "q" => Ok(Some(Action::Exit)),
+            "c" => Ok(Some(Action::CreateEpic)),
+            input => {
+                if let Ok(epic_id) = input.parse::<u32>() {
+                    if epics.contains_key(&epic_id) {
+                        return Ok(Some(Action::NavigateToEpicDetail { epic_id }));
+                    }
+                }
+                Ok(None)
+            }
+        }
     }
 
     fn as_any(&self) -> &dyn Any {
-        todo!()
+        self
     }
 }
 
