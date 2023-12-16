@@ -30,6 +30,25 @@ impl Page for HomePage {
     }
 }
 
+pub struct EpicDetail {
+    pub epic_id: u32,
+    pub db: Rc<JiraDatabase>,
+}
+
+impl Page for EpicDetail {
+    fn draw_page(&self) -> Result<()> {
+        todo!()
+    }
+
+    fn handle_input(&self, input: &str) -> Result<Option<Action>> {
+        todo!()
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        todo!()
+    }
+}
+
 pub struct StoryDetail {
     pub epic_id: u32,
     pub story_id: u32,
