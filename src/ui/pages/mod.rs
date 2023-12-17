@@ -145,7 +145,26 @@ pub struct StoryDetail {
 
 impl Page for StoryDetail {
     fn draw_page(&self) -> Result<()> {
-        todo!()
+        let db_state = self.db.read_db()?;
+        let story = db_state
+            .stories
+            .get(&self.story_id)
+            .ok_or_else(|| anyhow!("could not find story!"))?;
+
+        println!("------------------------------ STORY ------------------------------");
+        println!("  id  |     name     |         description         |    status    ");
+        let id_col = get_column_string(&self.story_id.to_string(), 5);
+        let name_col = get_column_string(&story.name, 12);
+        let desc_col = get_column_string(&story.description, 27);
+        let status_col = get_column_string(&story.status.to_string(), 13);
+        println!("{} | {} | {} | {}", id_col, name_col, desc_col, status_col);
+
+        println!();
+        println!();
+
+        println!("[p] previous | [u] update story | [d] delete story");
+
+        Ok(())
     }
 
     fn handle_input(&self, input: &str) -> Result<Option<Action>> {
