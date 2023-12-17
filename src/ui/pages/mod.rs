@@ -341,10 +341,16 @@ mod tests {
             let db = Rc::new(JiraDatabase {
                 database: Box::new(MockDB::new()),
             });
+
+            let epic_id = db
+                .create_epic(Epic::new("".to_owned(), "".to_owned()))
+                .unwrap();
+            let _ = db
+                .create_story(Story::new("".to_owned(), "".to_owned()), epic_id)
+                .unwrap();
+
             let page = StoryDetail {
-                epic_id: db
-                    .create_epic(Epic::new("".to_string(), "".to_string()))
-                    .unwrap(),
+                epic_id,
                 story_id: invalid_story_id,
                 db,
             };
@@ -367,7 +373,7 @@ mod tests {
                 story_id,
                 db,
             };
-            assert_eq!(page.handle_input("").is_ok(), true);
+            assert_eq!(page.draw_page().is_ok(), true);
         }
     }
 }
