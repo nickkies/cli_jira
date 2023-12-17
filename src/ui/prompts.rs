@@ -1,5 +1,5 @@
 use crate::{
-    io_utils::get_user_input,
+    io_utils::{get_user_input, get_user_input_trimmed},
     models::{Epic, Status, Story},
 };
 
@@ -26,10 +26,10 @@ impl Prompts {
 fn create_epic_prompt() -> Epic {
     println!("----------------------------");
     println!("Epic Name: ");
-    let epic_name = get_user_input().trim().to_string();
+    let epic_name = get_user_input_trimmed();
 
     println!("Epic Description: ");
-    let epic_desc = get_user_input().trim().to_string();
+    let epic_desc = get_user_input_trimmed();
 
     Epic::new(epic_name, epic_desc)
 }
@@ -37,11 +37,10 @@ fn create_epic_prompt() -> Epic {
 fn create_story_prompt() -> Story {
     println!("----------------------------");
     println!("Story Name: ");
-
-    let story_name = get_user_input().trim().to_string();
+    let story_name = get_user_input_trimmed();
 
     println!("Story Description: ");
-    let story_desc = get_user_input().trim().to_string();
+    let story_desc = get_user_input_trimmed();
 
     Story::new(story_name, story_desc)
 }
@@ -49,7 +48,7 @@ fn create_story_prompt() -> Story {
 fn delete_epic_prompt() -> bool {
     println!("----------------------------");
     println!("Are you sure you want to delete this epic? All stories in this epic will also be deleted [Y/n]: ");
-    let input = get_user_input().trim().to_string();
+    let input = get_user_input_trimmed();
 
     if input.eq("Y") {
         true
@@ -61,7 +60,7 @@ fn delete_epic_prompt() -> bool {
 fn delete_story_prompt() -> bool {
     println!("----------------------------");
     println!("Are you sure you want to delete this story? [Y/n]: ");
-    let input = get_user_input().trim().to_string();
+    let input = get_user_input_trimmed();
 
     if input.eq("Y") {
         true
