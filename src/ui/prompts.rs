@@ -1,5 +1,5 @@
 use crate::{
-    io_utils::{get_user_input, get_user_input_trimmed},
+    io_utils::get_user_input_trimmed,
     models::{Epic, Status, Story},
 };
 
