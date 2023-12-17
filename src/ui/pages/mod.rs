@@ -105,7 +105,7 @@ impl Page for StoryDetail {
 mod tests {
     use super::*;
     use crate::db::test_utils::MockDB;
-    use crate::models::Epic;
+    use crate::models::{Epic, Story};
 
     mod home_page {
         use super::*;
@@ -183,6 +183,94 @@ mod tests {
             };
 
             assert_eq!(page.draw_page().is_err(), true);
+        }
+
+        #[test]
+        fn draw_page_should_not_throw_error() {
+            let db = Rc::new(JiraDatabase {
+                database: Box::new(MockDB::new()),
+            });
+            let page = EpicDetail {
+                epic_id: db
+                    .create_epic(Epic::new("".to_string(), "".to_string()))
+                    .unwrap(),
+                db,
+            };
+
+            assert_eq!(page.draw_page().is_ok(), true);
+        }
+
+        #[test]
+        fn handle_input_should_not_throw_error() {
+            let db = Rc::new(JiraDatabase {
+                database: Box::new(MockDB::new()),
+            });
+            let page = EpicDetail {
+                epic_id: db
+                    .create_epic(Epic::new("".to_string(), "".to_string()))
+                    .unwrap(),
+                db,
+            };
+
+            assert_eq!(page.handle_input("").is_ok(), true);
+        }
+
+        #[test]
+        fn handle_input_should_return_the_correct_actions() {
+            let db = Rc::new(JiraDatabase {
+                database: Box::new(MockDB::new()),
+            });
+            let epic_id = db
+                .create_epic(Epic::new("".to_string(), "".to_string()))
+                .unwrap();
+            let story_id = db
+                .create_story(Story::new("".to_string(), "".to_string()), epic_id)
+                .unwrap();
+            let page = EpicDetail { epic_id, db };
+
+            let p = "p";
+            let u = "u";
+            let d = "d";
+            let c = "c";
+            let invalid_input = "999";
+            let junk_input: &str = "junkinput";
+            let junk_input_with_valid_prefix = "pjunkinput";
+            let input_with_trailing_white_spaces = "p\n";
+            let epic_id = 1;
+
+            assert_eq!(
+                page.handle_input(p).unwrap(),
+                Some(Action::NavigateToPreviousPage)
+            );
+            assert_eq!(
+                page.handle_input(u).unwrap(),
+                Some(Action::UpdateEpicStatus { epic_id })
+            );
+            assert_eq!(
+                page.handle_input(d).unwrap(),
+                Some(Action::DeleteEpic { epic_id })
+            );
+            assert_eq!(
+                page.handle_input(c).unwrap(),
+                Some(Action::CreateStory { epic_id })
+            );
+            assert_eq!(
+                page.handle_input(&story_id.to_string()).unwrap(),
+                Some(Action::NavigateToStoryDetail {
+                    epic_id,
+                    story_id: 2
+                })
+            );
+            assert_eq!(page.handle_input(invalid_input).unwrap(), None);
+            assert_eq!(page.handle_input(junk_input).unwrap(), None);
+            assert_eq!(
+                page.handle_input(junk_input_with_valid_prefix).unwrap(),
+                None
+            );
+            assert_eq!(
+                page.handle_input(input_with_trailing_white_spaces).unwrap(),
+                None
+            );
         }
     }
 }
