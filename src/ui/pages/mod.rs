@@ -350,5 +350,24 @@ mod tests {
             };
             assert_eq!(page.draw_page().is_err(), true);
         }
+
+        #[test]
+        fn draw_page_should_not_throw_error() {
+            let db = Rc::new(JiraDatabase {
+                database: Box::new(MockDB::new()),
+            });
+            let epic_id = db
+                .create_epic(Epic::new("".to_string(), "".to_string()))
+                .unwrap();
+            let story_id = db
+                .create_story(Story::new("".to_string(), "".to_string()), epic_id)
+                .unwrap();
+            let page = StoryDetail {
+                epic_id,
+                story_id,
+                db,
+            };
+            assert_eq!(page.handle_input("").is_ok(), true);
+        }
     }
 }
