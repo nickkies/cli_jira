@@ -1,4 +1,7 @@
-use crate::models::{Epic, Status, Story};
+use crate::{
+    io_utils::get_user_input,
+    models::{Epic, Status, Story},
+};
 
 pub struct Prompts {
     pub create_epic: Box<dyn Fn() -> Epic>,
@@ -21,11 +24,26 @@ impl Prompts {
 }
 
 fn create_epic_prompt() -> Epic {
-    todo!();
+    println!("----------------------------");
+    println!("Epic Name: ");
+    let epic_name = get_user_input().trim().to_string();
+
+    println!("Epic Description: ");
+    let epic_desc = get_user_input().trim().to_string();
+
+    Epic::new(epic_name, epic_desc)
 }
 
 fn create_story_prompt() -> Story {
-    todo!();
+    println!("----------------------------");
+    println!("Story Name: ");
+
+    let story_name = get_user_input().trim().to_string();
+
+    println!("Story Description: ");
+    let story_desc = get_user_input().trim().to_string();
+
+    Story::new(story_name, story_desc)
 }
 
 fn delete_epic_prompt() -> bool {
