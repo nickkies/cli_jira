@@ -47,11 +47,27 @@ fn create_story_prompt() -> Story {
 }
 
 fn delete_epic_prompt() -> bool {
-    todo!();
+    println!("----------------------------");
+    println!("Are you sure you want to delete this epic? All stories in this epic will also be deleted [Y/n]: ");
+    let input = get_user_input().trim().to_string();
+
+    if input.eq("Y") {
+        true
+    } else {
+        false
+    }
 }
 
 fn delete_story_prompt() -> bool {
-    todo!();
+    println!("----------------------------");
+    println!("Are you sure you want to delete this story? [Y/n]: ");
+    let input = get_user_input().trim().to_string();
+
+    if input.eq("Y") {
+        true
+    } else {
+        false
+    }
 }
 
 fn update_status_prompt() -> Option<Status> {
