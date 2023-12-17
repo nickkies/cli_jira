@@ -48,41 +48,29 @@ fn create_story_prompt() -> Story {
 fn delete_epic_prompt() -> bool {
     println!("----------------------------");
     println!("Are you sure you want to delete this epic? All stories in this epic will also be deleted [Y/n]: ");
-    let input = get_user_input_trimmed();
 
-    if input.eq("Y") {
-        true
-    } else {
-        false
-    }
+    get_user_input_trimmed().eq("Y")
 }
 
 fn delete_story_prompt() -> bool {
     println!("----------------------------");
     println!("Are you sure you want to delete this story? [Y/n]: ");
-    let input = get_user_input_trimmed();
 
-    if input.eq("Y") {
-        true
-    } else {
-        false
-    }
+    get_user_input_trimmed().eq("Y")
 }
 
 fn update_status_prompt() -> Option<Status> {
     println!("----------------------------");
     println!("New Status (1 - OPEN, 2 - IN PROGRESS, 3 - RESOLVED, 4 - CLOSED): ");
-    let status = get_user_input_trimmed().parse::<u32>();
 
-    if let Ok(status) = status {
-        match status {
+    get_user_input_trimmed()
+        .parse::<u32>()
+        .ok()
+        .and_then(|status| match status {
             1 => Some(Status::Open),
             2 => Some(Status::Inprogress),
             3 => Some(Status::Resolved),
             4 => Some(Status::Closed),
             _ => None,
-        }
-    } else {
-        None
-    }
+        })
 }
