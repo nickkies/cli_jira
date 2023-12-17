@@ -168,4 +168,21 @@ mod tests {
             );
         }
     }
+
+    mod epic_detail_page {
+        use super::*;
+
+        #[test]
+        fn draw_page_should_throw_error_for_invalid_epic_id() {
+            let invalid_epic_id = 999;
+            let page = EpicDetail {
+                epic_id: invalid_epic_id,
+                db: Rc::new(JiraDatabase {
+                    database: Box::new(MockDB::new()),
+                }),
+            };
+
+            assert_eq!(page.draw_page().is_err(), true);
+        }
+    }
 }
