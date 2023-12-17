@@ -329,4 +329,26 @@ mod tests {
             );
         }
     }
+
+    mod story_detail_page {
+        use super::*;
+
+        use crate::db::{test_utils::MockDB, JiraDatabase};
+
+        #[test]
+        fn draw_page_should_throw_error_for_invalid_story_id() {
+            let invalid_story_id = 999;
+            let db = Rc::new(JiraDatabase {
+                database: Box::new(MockDB::new()),
+            });
+            let page = StoryDetail {
+                epic_id: db
+                    .create_epic(Epic::new("".to_string(), "".to_string()))
+                    .unwrap(),
+                story_id: invalid_story_id,
+                db,
+            };
+            assert_eq!(page.draw_page().is_err(), true);
+        }
+    }
 }
