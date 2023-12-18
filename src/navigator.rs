@@ -4,7 +4,7 @@ use anyhow::Result;
 
 use crate::{
     db::JiraDatabase,
-    models::Action,
+    models::{Action, Epic, Story},
     ui::{EpicDetail, HomePage, Page, Prompts, StoryDetail},
 };
 
@@ -61,6 +61,11 @@ impl Navigator {
     #[allow(dead_code)]
     fn get_page_count(&self) -> usize {
         self.pages.len()
+    }
+
+    #[allow(dead_code)]
+    fn set_prompts(&mut self, prompts: Prompts) {
+        self.propmpts = prompts
     }
 }
 
@@ -141,5 +146,49 @@ mod tests {
 
         nav.handle_action(Action::NavigateToPreviousPage).unwrap();
         assert_eq!(nav.get_page_count(), 0);
+    }
+
+    #[test]
+    fn handle_action_should_handle_create_epic() {
+        let db = Rc::new(JiraDatabase {
+            database: Box::new(MockDB::new()),
+        });
+        let mut nav = Navigator::new(Rc::clone(&db));
+        let mut prompts = Prompts::new();
+
+        prompts.create_epic = Box::new(|| Epic::new("name".to_string(), "description".to_string()));
+        nav.set_prompts(prompts);
+        nav.handle_action(Action::CreateEpic).unwrap();
+
+        let epics = db.read_db().unwrap().epics;
+        assert_eq!(epics.len(), 1);
+
+        let epic = epics.into_iter().next().unwrap().1;
+        assert_eq!(epic.name, "name".to_string());
+        assert_eq!(epic.description, "description".to_string());
+    }
+
+    #[test]
+    fn handle_action_should_handle_create_story() {
+        let db = Rc::new(JiraDatabase {
+            database: Box::new(MockDB::new()),
+        });
+        let epic_id = db
+            .create_epic(Epic::new("".to_string(), "".to_string()))
+            .unwrap();
+        let mut nav = Navigator::new(Rc::clone(&db));
+        let mut prompts = Prompts::new();
+
+        prompts.create_story =
+            Box::new(|| Story::new("name".to_string(), "description".to_string()));
+        nav.set_prompts(prompts);
+        nav.handle_action(Action::CreateStory { epic_id }).unwrap();
+
+        let stories = db.read_db().unwrap().stories;
+        assert_eq!(stories.len(), 1);
+
+        let story = stories.into_iter().next().unwrap().1;
+        assert_eq!(story.name, "name".to_string());
+        assert_eq!(story.description, "description".to_string());
     }
 }
