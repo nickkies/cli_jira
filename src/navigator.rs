@@ -5,7 +5,7 @@ use anyhow::Result;
 use crate::{
     db::JiraDatabase,
     models::Action,
-    ui::{HomePage, Page, Prompts},
+    ui::{EpicDetail, HomePage, Page, Prompts, StoryDetail},
 };
 
 pub struct Navigator {
@@ -59,16 +59,74 @@ mod tests {
 
     #[test]
     fn should_start_on_home_page() {
-        let db = Rc::new(JiraDatabase {
+        let nav = Navigator::new(Rc::new(JiraDatabase {
             database: Box::new(MockDB::new()),
-        });
-        let nav = Navigator::new(db);
-
+        }));
         assert_eq!(nav.get_page_count(), 1);
 
-        let current_page = nav.get_current_page().unwrap();
-        let home_page = current_page.as_any().downcast_ref::<HomePage>();
-
+        let home_page = nav
+            .get_current_page()
+            .unwrap()
+            .as_any()
+            .downcast_ref::<HomePage>();
         assert_eq!(home_page.is_some(), true);
+    }
+
+    #[test]
+    fn handle_action_should_navigate_pages() {
+        let mut nav = Navigator::new(Rc::new(JiraDatabase {
+            database: Box::new(MockDB::new()),
+        }));
+
+        nav.handle_action(Action::NavigateToEpicDetail { epic_id: 1 })
+            .unwrap();
+        assert_eq!(nav.get_page_count(), 2);
+
+        let epic_detail_page = nav
+            .get_current_page()
+            .unwrap()
+            .as_any()
+            .downcast_ref::<EpicDetail>();
+        assert_eq!(epic_detail_page.is_some(), true);
+
+        nav.handle_action(Action::NavigateToStoryDetail {
+            epic_id: 1,
+            story_id: 2,
+        })
+        .unwrap();
+        assert_eq!(nav.get_page_count(), 3);
+
+        let story_detail_page = nav
+            .get_current_page()
+            .unwrap()
+            .as_any()
+            .downcast_ref::<StoryDetail>();
+        assert_eq!(story_detail_page.is_some(), true);
+
+        nav.handle_action(Action::NavigateToPreviousPage).unwrap();
+        assert_eq!(nav.get_page_count(), 2);
+
+        let epic_detail_page = nav
+            .get_current_page()
+            .unwrap()
+            .as_any()
+            .downcast_ref::<EpicDetail>();
+        assert_eq!(epic_detail_page.is_some(), true);
+
+        nav.handle_action(Action::NavigateToPreviousPage).unwrap();
+        assert_eq!(nav.get_page_count(), 1);
+
+        let home_page = nav
+            .get_current_page()
+            .unwrap()
+            .as_any()
+            .downcast_ref::<HomePage>();
+        assert_eq!(home_page.is_some(), true);
+
+        nav.handle_action(Action::NavigateToPreviousPage).unwrap();
+        assert_eq!(nav.get_page_count(), 0);
+
+        nav.handle_action(Action::NavigateToPreviousPage).unwrap();
+        assert_eq!(nav.get_page_count(), 0);
     }
 }
