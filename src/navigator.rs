@@ -216,6 +216,24 @@ mod tests {
     }
 
     #[test]
+    fn handle_action_should_handle_delete_epic() {
+        let db = Rc::new(JiraDatabase {
+            database: Box::new(MockDB::new()),
+        });
+        let epic_id = db
+            .create_epic(Epic::new("".to_string(), "".to_string()))
+            .unwrap();
+        let mut nav = Navigator::new(Rc::clone(&db));
+        let mut prompts = Prompts::new();
+
+        prompts.delete_epic = Box::new(|| true);
+        nav.set_prompts(prompts);
+        nav.handle_action(Action::DeleteEpic { epic_id }).unwrap();
+
+        assert_eq!(db.read_db().unwrap().epics.len(), 0);
+    }
+
+    #[test]
     fn handle_action_should_handle_create_story() {
         let db = Rc::new(JiraDatabase {
             database: Box::new(MockDB::new()),
@@ -263,5 +281,27 @@ mod tests {
             db.read_db().unwrap().stories.get(&story_id).unwrap().status,
             Status::Inprogress
         );
+    }
+
+    #[test]
+    fn handle_action_should_handle_delete_story() {
+        let db = Rc::new(JiraDatabase {
+            database: Box::new(MockDB::new()),
+        });
+        let epic_id = db
+            .create_epic(Epic::new("".to_string(), "".to_string()))
+            .unwrap();
+        let story_id = db
+            .create_story(Story::new("".to_string(), "".to_string()), epic_id)
+            .unwrap();
+        let mut nav = Navigator::new(Rc::clone(&db));
+        let mut prompts = Prompts::new();
+
+        prompts.delete_story = Box::new(|| true);
+        nav.set_prompts(prompts);
+        nav.handle_action(Action::DeleteStory { epic_id, story_id })
+            .unwrap();
+
+        assert_eq!(db.read_db().unwrap().stories.len(), 0);
     }
 }
