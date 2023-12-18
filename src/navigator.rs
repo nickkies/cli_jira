@@ -51,7 +51,13 @@ impl Navigator {
                     .create_epic(epic)
                     .with_context(|| anyhow!("failed to create epic!"))?;
             }
-            Action::UpdateEpicStatus { epic_id } => todo!(),
+            Action::UpdateEpicStatus { epic_id } => {
+                (self.propmpts.update_status)().map(|status| {
+                    self.db
+                        .update_epic_status(epic_id, status)
+                        .with_context(|| anyhow!("failed to update epic!"))
+                });
+            }
             Action::DeleteEpic { epic_id } => todo!(),
             Action::CreateStory { epic_id } => {
                 let story = (self.propmpts.create_story)();
@@ -59,7 +65,13 @@ impl Navigator {
                     .create_story(story, epic_id)
                     .with_context(|| anyhow!("failed to create story!"))?;
             }
-            Action::UpdateStoryStatus { story_id } => todo!(),
+            Action::UpdateStoryStatus { story_id } => {
+                (self.propmpts.update_status)().map(|status| {
+                    self.db
+                        .update_story_status(story_id, status)
+                        .with_context(|| anyhow!("failed to update story!"))
+                });
+            }
             Action::DeleteStory { epic_id, story_id } => todo!(),
             Action::Exit => todo!(),
         }
