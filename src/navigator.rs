@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use anyhow::Result;
+use anyhow::{anyhow, Context, Result};
 
 use crate::{
     db::JiraDatabase,
@@ -45,10 +45,20 @@ impl Navigator {
                     self.pages.pop();
                 }
             }
-            Action::CreateEpic => todo!(),
+            Action::CreateEpic => {
+                let epic = (self.propmpts.create_epic)();
+                self.db
+                    .create_epic(epic)
+                    .with_context(|| anyhow!("failed to create epic!"))?;
+            }
             Action::UpdateEpicStatus { epic_id } => todo!(),
             Action::DeleteEpic { epic_id } => todo!(),
-            Action::CreateStory { epic_id } => todo!(),
+            Action::CreateStory { epic_id } => {
+                let story = (self.propmpts.create_story)();
+                self.db
+                    .create_story(story, epic_id)
+                    .with_context(|| anyhow!("failed to create story!"))?;
+            }
             Action::UpdateStoryStatus { story_id } => todo!(),
             Action::DeleteStory { epic_id, story_id } => todo!(),
             Action::Exit => todo!(),
