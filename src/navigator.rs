@@ -58,7 +58,17 @@ impl Navigator {
                         .with_context(|| anyhow!("failed to update epic!"))
                 });
             }
-            Action::DeleteEpic { epic_id } => todo!(),
+            Action::DeleteEpic { epic_id } => {
+                if (self.propmpts.delete_epic)() {
+                    self.db
+                        .delete_epic(epic_id)
+                        .with_context(|| anyhow!("fail to delete epic!"))?;
+
+                    if !self.pages.is_empty() {
+                        self.pages.pop();
+                    }
+                }
+            }
             Action::CreateStory { epic_id } => {
                 let story = (self.propmpts.create_story)();
                 self.db
@@ -72,7 +82,17 @@ impl Navigator {
                         .with_context(|| anyhow!("failed to update story!"))
                 });
             }
-            Action::DeleteStory { epic_id, story_id } => todo!(),
+            Action::DeleteStory { epic_id, story_id } => {
+                if (self.propmpts.delete_story)() {
+                    self.db
+                        .delete_story(epic_id, story_id)
+                        .with_context(|| anyhow!("fail to delete story!"))?;
+
+                    if !self.pages.is_empty() {
+                        self.pages.pop();
+                    }
+                }
+            }
             Action::Exit => todo!(),
         }
 
