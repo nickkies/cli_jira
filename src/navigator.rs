@@ -5,7 +5,7 @@ use anyhow::Result;
 use crate::{
     db::JiraDatabase,
     models::Action,
-    ui::{Page, Prompts},
+    ui::{HomePage, Page, Prompts},
 };
 
 pub struct Navigator {
@@ -39,14 +39,32 @@ impl Navigator {
 
         Ok(())
     }
+
+    // fn for testing
+    #[allow(dead_code)]
+    fn get_page_count(&self) -> usize {
+        self.pages.len()
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::db::test_utils::MockDB;
+
     use super::*;
 
     #[test]
-    fn navigator_mod_test() {
-        assert_eq!(true, true);
+    fn should_start_on_home_page() {
+        let db = Rc::new(JiraDatabase {
+            database: Box::new(MockDB::new()),
+        });
+        let nav = Navigator::new(db);
+
+        assert_eq!(nav.get_page_count(), 1);
+
+        let current_page = nav.get_current_page().unwrap();
+        let home_page = current_page.as_any().downcast_ref::<HomePage>();
+
+        assert_eq!(home_page.is_some(), true);
     }
 }
