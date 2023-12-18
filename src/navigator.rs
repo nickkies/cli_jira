@@ -1,10 +1,10 @@
 use std::rc::Rc;
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::{anyhow, Context, Ok, Result};
 
 use crate::{
     db::JiraDatabase,
-    models::{Action, Epic, Story},
+    models::Action,
     ui::{EpicDetail, HomePage, Page, Prompts, StoryDetail},
 };
 
@@ -81,7 +81,10 @@ impl Navigator {
 
 #[cfg(test)]
 mod tests {
-    use crate::db::test_utils::MockDB;
+    use crate::{
+        db::test_utils::MockDB,
+        models::{Epic, Status, Story},
+    };
 
     use super::*;
 
@@ -179,6 +182,28 @@ mod tests {
     }
 
     #[test]
+    fn handle_action_should_handle_update_epic() {
+        let db = Rc::new(JiraDatabase {
+            database: Box::new(MockDB::new()),
+        });
+        let epic_id = db
+            .create_epic(Epic::new("".to_string(), "".to_string()))
+            .unwrap();
+        let mut nav = Navigator::new(Rc::clone(&db));
+        let mut prompts = Prompts::new();
+
+        prompts.update_status = Box::new(|| Some(Status::Inprogress));
+        nav.set_prompts(prompts);
+        nav.handle_action(Action::UpdateEpicStatus { epic_id })
+            .unwrap();
+
+        assert_eq!(
+            db.read_db().unwrap().epics.get(&epic_id).unwrap().status,
+            Status::Inprogress
+        );
+    }
+
+    #[test]
     fn handle_action_should_handle_create_story() {
         let db = Rc::new(JiraDatabase {
             database: Box::new(MockDB::new()),
@@ -200,5 +225,31 @@ mod tests {
         let story = stories.into_iter().next().unwrap().1;
         assert_eq!(story.name, "name".to_string());
         assert_eq!(story.description, "description".to_string());
+    }
+
+    #[test]
+    fn handle_action_should_handle_update_story() {
+        let db = Rc::new(JiraDatabase {
+            database: Box::new(MockDB::new()),
+        });
+        let epic_id = db
+            .create_epic(Epic::new("".to_string(), "".to_string()))
+            .unwrap();
+        let story_id = db
+            .create_story(Story::new("".to_string(), "".to_string()), epic_id)
+            .unwrap();
+
+        let mut nav = Navigator::new(Rc::clone(&db));
+        let mut prompts = Prompts::new();
+
+        prompts.update_status = Box::new(|| Some(Status::Inprogress));
+        nav.set_prompts(prompts);
+        nav.handle_action(Action::UpdateStoryStatus { story_id })
+            .unwrap();
+
+        assert_eq!(
+            db.read_db().unwrap().stories.get(&story_id).unwrap().status,
+            Status::Inprogress
+        );
     }
 }
