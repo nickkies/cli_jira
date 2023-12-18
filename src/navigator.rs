@@ -29,9 +29,22 @@ impl Navigator {
 
     pub fn handle_action(&mut self, action: Action) -> Result<()> {
         match action {
-            Action::NavigateToEpicDetail { epic_id } => todo!(),
-            Action::NavigateToStoryDetail { epic_id, story_id } => todo!(),
-            Action::NavigateToPreviousPage => todo!(),
+            Action::NavigateToEpicDetail { epic_id } => self.pages.push(Box::new(EpicDetail {
+                epic_id,
+                db: Rc::clone(&self.db),
+            })),
+            Action::NavigateToStoryDetail { epic_id, story_id } => {
+                self.pages.push(Box::new(StoryDetail {
+                    epic_id,
+                    story_id,
+                    db: Rc::clone(&self.db),
+                }))
+            }
+            Action::NavigateToPreviousPage => {
+                if !self.pages.is_empty() {
+                    self.pages.pop();
+                }
+            }
             Action::CreateEpic => todo!(),
             Action::UpdateEpicStatus { epic_id } => todo!(),
             Action::DeleteEpic { epic_id } => todo!(),
