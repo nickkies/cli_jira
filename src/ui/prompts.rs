@@ -68,7 +68,7 @@ fn update_status_prompt() -> Option<Status> {
         .ok()
         .and_then(|status| match status {
             1 => Some(Status::Open),
-            2 => Some(Status::Inprogress),
+            2 => Some(Status::InProgress),
             3 => Some(Status::Resolved),
             4 => Some(Status::Closed),
             _ => None,
