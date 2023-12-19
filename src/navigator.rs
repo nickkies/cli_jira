@@ -93,7 +93,7 @@ impl Navigator {
                     }
                 }
             }
-            Action::Exit => todo!(),
+            Action::Exit => self.pages.clear(),
         }
 
         Ok(())
