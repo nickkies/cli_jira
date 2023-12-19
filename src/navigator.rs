@@ -324,4 +324,22 @@ mod tests {
 
         assert_eq!(db.read_db().unwrap().stories.len(), 0);
     }
+
+    #[test]
+    fn handle_action_should_clear_pages_on_exit() {
+        let mut nav = Navigator::new(Rc::clone(&Rc::new(JiraDatabase {
+            database: Box::new(MockDB::new()),
+        })));
+
+        nav.handle_action(Action::NavigateToEpicDetail { epic_id: 1 })
+            .unwrap();
+        nav.handle_action(Action::NavigateToStoryDetail {
+            epic_id: 1,
+            story_id: 2,
+        })
+        .unwrap();
+        nav.handle_action(Action::Exit).unwrap();
+
+        assert_eq!(nav.get_page_count(), 0);
+    }
 }
