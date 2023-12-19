@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use db::JiraDatabase;
-use io_utils::{get_user_input_trimmed, wait_for_key_press};
+use io_utils::{get_user_input, wait_for_key_press};
 use navigator::Navigator;
 
 mod db;
@@ -26,7 +26,7 @@ fn main() {
                 wait_for_key_press();
             };
 
-            let user_input = get_user_input_trimmed();
+            let user_input = get_user_input();
 
             match page.handle_input(&user_input) {
                 Err(error) => {

@@ -1,5 +1,5 @@
 use crate::{
-    io_utils::get_user_input_trimmed,
+    io_utils::get_user_input,
     models::{Epic, Status, Story},
 };
 
@@ -26,10 +26,10 @@ impl Prompts {
 fn create_epic_prompt() -> Epic {
     println!("----------------------------");
     println!("Epic Name: ");
-    let epic_name = get_user_input_trimmed();
+    let epic_name = get_user_input();
 
     println!("Epic Description: ");
-    let epic_desc = get_user_input_trimmed();
+    let epic_desc = get_user_input();
 
     Epic::new(epic_name, epic_desc)
 }
@@ -37,10 +37,10 @@ fn create_epic_prompt() -> Epic {
 fn create_story_prompt() -> Story {
     println!("----------------------------");
     println!("Story Name: ");
-    let story_name = get_user_input_trimmed();
+    let story_name = get_user_input();
 
     println!("Story Description: ");
-    let story_desc = get_user_input_trimmed();
+    let story_desc = get_user_input();
 
     Story::new(story_name, story_desc)
 }
@@ -49,21 +49,21 @@ fn delete_epic_prompt() -> bool {
     println!("----------------------------");
     println!("Are you sure you want to delete this epic? All stories in this epic will also be deleted [Y/n]: ");
 
-    get_user_input_trimmed().eq("Y")
+    get_user_input().eq("Y")
 }
 
 fn delete_story_prompt() -> bool {
     println!("----------------------------");
     println!("Are you sure you want to delete this story? [Y/n]: ");
 
-    get_user_input_trimmed().eq("Y")
+    get_user_input().eq("Y")
 }
 
 fn update_status_prompt() -> Option<Status> {
     println!("----------------------------");
     println!("New Status (1 - OPEN, 2 - IN PROGRESS, 3 - RESOLVED, 4 - CLOSED): ");
 
-    get_user_input_trimmed()
+    get_user_input()
         .parse::<u32>()
         .ok()
         .and_then(|status| match status {
